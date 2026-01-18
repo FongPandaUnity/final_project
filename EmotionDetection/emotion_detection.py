@@ -7,6 +7,17 @@ def emotion_detector(text_to_analyse):  # Define a function named emotion_detect
     myobj = { "raw_document": { "text": text_to_analyse } }  # Create a dictionary with the text to be analyzed
     response = requests.post(url, json = myobj, headers=header)  # Send a POST request to the API with the text and headers
     
+    #handle blank input
+    if response.status_code == 400:
+            return {
+                "anger": None,
+                "disgust": None,
+                "fear": None,
+                "joy": None,
+                "sadness": None,
+                "dominant_emotion": None
+            }
+
     formatted_response = json.loads(response.text)
     emo = formatted_response["emotionPredictions"][0]["emotion"]
 
@@ -15,9 +26,9 @@ def emotion_detector(text_to_analyse):  # Define a function named emotion_detect
     fear_score = emo["fear"]
     joy_score = emo["joy"]
     sadness_score = emo["sadness"]
-
     dominant_emotion = max(emo, key=emo.get)
 
+    # Return the response text from the API
     return {
         "anger": anger_score,
         "disgust": disgust_score,
@@ -26,4 +37,3 @@ def emotion_detector(text_to_analyse):  # Define a function named emotion_detect
         "sadness": sadness_score,
         "dominant_emotion": dominant_emotion
     }
-    # Return the response text from the API
